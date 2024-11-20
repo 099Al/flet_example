@@ -8,3 +8,4 @@ hoverBgcolor = '#0068f7'
 # Настройки окна
 defaultWidthWindow = '1000'
 defaultHeightWindow = '600'
+inputBgErrorColor = '#291919'

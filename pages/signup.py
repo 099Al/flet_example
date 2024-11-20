@@ -58,6 +58,25 @@ class SignupPage:
         border_radius=15,
     )
 
+    def display_error(self, message, input_field=None, highlight_input=False):
+        """Helper function to display error messages."""
+        if highlight_input and input_field:
+            input_field.content.bgcolor = inputBgErrorColor
+            input_field.update()
+
+        self.error_field.value = message
+        self.error_field.size = 12
+        self.error_field.update()
+
+        # Wait and reset error display
+        time.sleep(1)
+        self.error_field.size = 0      # скрыть сообщение
+        self.error_field.update()
+
+        if highlight_input and input_field:
+            input_field.content.bgcolor = inputBgColor
+            input_field.update()
+
     def view(self, page: ft.Page, params: Params, basket: Basket):
         page.title = "Страница Регистрации"
         page.window.width = defaultWidthWindow
@@ -72,39 +91,22 @@ class SignupPage:
             password_value = self.password_input.content.value
             password_confirm = self.password_confirm.content.value
             if email_value and login_value and password_value and password_confirm:
-                if not self.validation.is_valiod_email(email_value):
-                    self.email_input.content.bgcolor = inputBgErrorColor
-                    self.error_field.value = 'поле Email не соответствует формату'
-                    self.error_field.size = 12
-                    self.email_input.update()
-                    self.error_field.update()
-                    time.sleep(1)
-                    self.error_field.size = 0
-                    self.email_input.content.bgcolor = inputBgColor
-                    self.email_input.update()
-                    self.error_field.update()
+                if not self.validation.is_valid_email(email_value):
+                    self.display_error('поле Email не соответствует формату',
+                                       input_field=self.email_input,
+                                       highlight_input=True)
                 elif not self.validation.is_valid_password(password_value):
-                    self.error_field.value = 'пароль должен быть более 5 символов содержать минимуи 1 спец.символ'
-                    self.error_field.size = 12
-                    self.error_field.update()
-                    time.sleep(1)
-                    self.error_field.size = 0
-                    self.error_field.update()
+                    self.display_error('пароль должен быть более 5 символов содержать минимуи 1 спец.символ',
+                                       input_field=self.password_input,
+                                       highlight_input=True)
                 elif password_value != password_confirm:
-                    self.error_field.value = 'пароли не совпадают'
-                    self.error_field.size = 12
-                    self.error_field.update()
-                    time.sleep(1)
-                    self.error_field.size = 0
-                    self.error_field.update()
-
+                    self.display_error('пароли не совпадают',
+                                       input_field=self.password_confirm,
+                                       highlight_input=True)
             else:
-                self.error_field.value = 'Заполните все поля'
-                self.error_field.update()
-                time.sleep(1)
-                self.error_field.size = 0   #очистить сообщение через 1 сек
-                self.error_field.update()
-                self.error_field.size = 12  #вернуть размер, чтобы повторно отрабатывало сообщение. но не update-ить
+                self.display_error('Заполните все поля',
+                                   input_field=None,
+                                   highlight_input=False)
             #print(email_value, login_value, password_value)
 
 

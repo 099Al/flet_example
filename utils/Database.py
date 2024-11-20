@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, Table, MetaData, select
+from sqlalchemy import create_engine, Table, MetaData, select, insert
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
@@ -31,6 +31,21 @@ class Database:
         )
         return result.fetchone()
 
+    def check_login(self, login):
+        result = self.session.execute(
+            select(self.adminUser)
+            .where(self.adminUser.c.login == login)
+        )
+        return result.fetchone()
+
+    def insert_user(self, login, email, password):
+        self.session.execute(insert(self.adminUser)
+                             .values(login=login,
+                                     email=email,
+                                     password=password
+                                     )
+                             )
+        self.session.commit()
 
 
 

@@ -3,7 +3,9 @@ import time
 import flet as ft
 from flet_route import Params, Basket
 
+
 from utils.Database import Database
+from utils.functions import hash_password_
 from utils.style import *
 from utils.validation import Validation
 
@@ -105,6 +107,10 @@ class SignupPage:
                     self.display_error('такой Email уже занят',
                                        input_field=self.email_input,
                                        highlight_input=True)
+                elif db.check_login(login_value):
+                    self.display_error('такой login уже занят',
+                                       input_field=self.login_input,
+                                       highlight_input=True)
                 elif not self.validation.is_valid_password(password_value):
                     self.display_error('пароль должен быть более 5 символов содержать минимуи 1 спец.символ',
                                        input_field=self.password_input,
@@ -114,6 +120,7 @@ class SignupPage:
                                        input_field=self.password_confirm,
                                        highlight_input=True)
                 else:
+                    db.insert_user(login_value, email_value, hash_password_(password_value))
                     self.error_field.value = 'Вы успешно зарегистрированы'
                     self.error_field.size = 12
                     self.error_field.color = ft.colors.GREEN

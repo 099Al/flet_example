@@ -2,6 +2,8 @@ import time
 
 import flet as ft
 from flet_route import Params, Basket
+
+from utils.Database import Database
 from utils.style import *
 from utils.validation import Validation
 
@@ -90,9 +92,17 @@ class SignupPage:
             login_value = self.login_input.content.value
             password_value = self.password_input.content.value
             password_confirm = self.password_confirm.content.value
+            db = Database()
+
+
+
             if email_value and login_value and password_value and password_confirm:
                 if not self.validation.is_valid_email(email_value):
                     self.display_error('поле Email не соответствует формату',
+                                       input_field=self.email_input,
+                                       highlight_input=True)
+                elif db.check_email(email_value):
+                    self.display_error('такой Email уже занят',
                                        input_field=self.email_input,
                                        highlight_input=True)
                 elif not self.validation.is_valid_password(password_value):

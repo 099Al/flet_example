@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, Table, MetaData, select, insert
+from sqlalchemy import create_engine, Table, MetaData, select, insert, and_
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
@@ -47,5 +47,14 @@ class Database:
                              )
         self.session.commit()
 
+    def authorization(self, login, password):
+        result = self.session.execute(
+            select(self.adminUser)
+            .where(and_(self.adminUser.c.login == login,
+                        self.adminUser.c.password == password)
+                   )
+        )
+
+        return result.fetchone()
 
 

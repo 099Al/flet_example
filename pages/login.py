@@ -1,5 +1,8 @@
 import flet as ft
 from flet_route import Params, Basket
+
+from utils.Database import Database
+from utils.functions import hash_password_
 from utils.style import *
 
 
@@ -29,6 +32,11 @@ class LoginPage:
         border_radius=15,
     )
 
+    error_message = ft.SnackBar(
+        content=ft.Text('Ошибка авторизации'),
+        bgcolor=inputBgErrorColor
+    )
+
     def view(self, page: ft.Page, params: Params, basket: Basket):
         page.title = "Страница авторизации"
         page.window.width = defaultWidthWindow
@@ -36,6 +44,18 @@ class LoginPage:
         page.window.min_width = 800
         page.window.min_height = 400
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
+
+        def authorization(e):
+            db = Database()
+            email = self.email_input.content.value
+            password = self.password_input.content.value
+            hash_password = hash_password_(password)
+            if db.authorization(email, hash_password):   #TODO переделать на email или login
+                page.session.set('auth_user', True)
+                page.go('/dashboard')
+            else:
+                self.error_message.open = True  # error_message определен выше
+                self.error_message.update()  #Вывод на экран
 
         return ft.View(
             "/",
@@ -59,6 +79,7 @@ class LoginPage:
                                         size=25,
                                         weight=ft.FontWeight.NORMAL,
                                     ),
+                                    self.error_message, #объект для оповещений
                                     self.email_input,
                                     self.password_input,
                                     ft.Container(
@@ -66,8 +87,9 @@ class LoginPage:
                                         alignment=ft.alignment.center,
                                         height=40,
                                         bgcolor=hoverBgcolor,
+                                        on_click=lambda e: authorization(e)
                                     ),
-                                    ft.Container(
+                                    ft.Container(        # ft.Container можно вынести в signup_link = ft.Container(...)
                                         ft.Text(
                                             "Создать аккаунт", color=defaultFontColor
                                         ),
@@ -93,7 +115,7 @@ class LoginPage:
                                         "Авторизация",
                                         color=hoverBgcolor,
                                         size=15,
-                                        weight=ft.FontWeight.BOLD,
+                                        weight=ft.FontWeight.BOLD
                                     ),
                                 ],
                             ),

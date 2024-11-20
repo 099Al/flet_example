@@ -103,6 +103,13 @@ class SignupPage:
                     self.display_error('пароли не совпадают',
                                        input_field=self.password_confirm,
                                        highlight_input=True)
+                else:
+                    self.error_field.value = 'Вы успешно зарегистрированы'
+                    self.error_field.size = 12
+                    self.error_field.color = ft.colors.GREEN
+                    self.error_field.update()
+                    time.sleep(4)
+                    page.go('/')
             else:
                 self.display_error('Заполните все поля',
                                    input_field=None,
